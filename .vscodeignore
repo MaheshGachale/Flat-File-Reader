@@ -1,0 +1,14 @@
+node_modules/**
+**/*.map
+.vscode/**
+.vscode-test/**
+**/src/**
+webview/src/**
+**/.DS_Store
+**/*.test.*
+.eslintignore
+.eslintrc.*
+.git/**
+.gitignore
+scripts/**
+!.*/** 

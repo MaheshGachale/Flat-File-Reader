@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build-extension",
+			"type": "shell",
+			"command": "npm run build",
+			"group": "build",
+			"problemMatcher": ["$tsc"]
+		},
+		{
+			"label": "build-webview",
+			"type": "shell",
+			"command": "npm run build:webview",
+			"group": "build"
+		},
+		{
+			"label": "build-all",
+			"dependsOn": ["build-extension", "build-webview"],
+			"group": "build"
+		}
+	]
+} 
