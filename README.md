@@ -2,6 +2,8 @@
 
 > Seamlessly explore and analyze **CSV, TSV, Parquet, and Excel files** with a powerful, intuitive table viewer – directly in VS Code. No external dependencies required!
 
+![Extension Screenshot](media/Extension_IMG.png)
+
 ---
 
 ## ✨ Features

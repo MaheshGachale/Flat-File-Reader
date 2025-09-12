@@ -4,6 +4,10 @@
   "description": "Open and explore CSV, Parquet, and Excel files with a modern table UI inside VS Code.",
   "version": "0.0.1",
   "publisher": "MaheshG",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MaheshGachale/Flat-File-Reader.git"
+  },
   "engines": {
     "vscode": "^1.84.0"
   },
