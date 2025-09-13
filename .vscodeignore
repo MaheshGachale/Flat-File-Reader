@@ -1,14 +1,42 @@
-node_modules/**
-**/*.map
+# Include all node_modules for native dependencies
+# node_modules/**
+
+# Include native dependencies
+!node_modules/duckdb/**
+!node_modules/@mapbox/**
+!node_modules/nopt/**
+!node_modules/abbrev/**
+!node_modules/detect-libc/**
+!node_modules/https-proxy-agent/**
+!node_modules/make-dir/**
+!node_modules/node-fetch/**
+!node_modules/npmlog/**
+!node_modules/rimraf/**
+!node_modules/semver/**
+!node_modules/tar/**
+!node_modules/whatwg-url/**
+!node_modules/tr46/**
+!node_modules/punycode/**
+!node_modules/webidl-conversions/**
+!node_modules/agent-base/**
+
+# Ignore source and dev-only stuff
 .vscode/**
 .vscode-test/**
-**/src/**
+src/**
 webview/src/**
-**/.DS_Store
-**/*.test.*
-.eslintignore
-.eslintrc.*
-.git/**
-.gitignore
 scripts/**
-!.*/** 
+test/**
+**/*.map
+**/*.test.*
+**/.DS_Store
+.eslintrc.*
+.eslintignore
+.gitignore
+.git/**
+tailwind.config.cjs
+tsconfig.json
+
+# Keep only build outputs
+!out/**
+!webview/dist/**

@@ -2,7 +2,7 @@
   "name": "flat-file-reader",
   "displayName": "Flat File Reader",
   "description": "Open and explore CSV, Parquet, and Excel files with a modern table UI inside VS Code.",
-  "version": "0.0.1",
+  "version": "1.0.12",
   "publisher": "MaheshG",
   "repository": {
     "type": "git",
@@ -21,6 +21,11 @@
     "onCustomEditor:flatFileReader.viewer"
   ],
   "main": "out/extension.js",
+  "binary": {
+    "module_name": "duckdb",
+    "module_path": "./node_modules/duckdb/lib/binding/",
+    "host": "https://npm.duckdb.org/duckdb"
+  },
   "contributes": {
     "commands": [
       {
@@ -52,13 +57,14 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run build && npm run build:webview",
+    "vscode:prepublish": "npm run build",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "build": "npm run compile",
+    "build": "npm run tailwind && node ./scripts/build.mjs",
     "build:webview": "npm run tailwind && node ./scripts/build-webview.mjs",
     "tailwind": "tailwindcss -c tailwind.config.cjs -i ./webview/src/index.css -o ./webview/dist/styles.css --minify",
-    "package": "vsce package"
+    "package": "vsce package",
+    "bundle": "esbuild src/extension.ts --bundle --platform=node --external:vscode --outfile=out/extension.js"
   },
   "devDependencies": {
     "@types/node": "^20.11.30",
@@ -73,8 +79,9 @@
     "vsce": "^2.15.0"
   },
   "dependencies": {
-    "duckdb": "^0.10.0",
+    "duckdb": "^0.10.2",
     "exceljs": "^4.4.0",
+    "fast-csv": "^4.3.6",
     "framer-motion": "^11.0.8",
     "papaparse": "^5.4.1",
     "react": "^18.2.0",

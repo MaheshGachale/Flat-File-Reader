@@ -8,11 +8,39 @@ type TableProps = {
 
 export const DataTable: React.FC<TableProps> = ({ columns, rows, searchTerm }) => {
 	const [widths, setWidths] = useState<number[]>(() => columns.map(() => 200));
+	const resizingCol = useRef<number | null>(null);
+	const startX = useRef<number>(0);
+	const startWidth = useRef<number>(0);
 
 	useEffect(() => {
 		setWidths(columns.map((_, i) => widths[i] ?? 200));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [columns.join('|')]);
+
+	const onMouseDown = (e: React.MouseEvent, index: number) => {
+		resizingCol.current = index;
+		startX.current = e.clientX;
+		startWidth.current = widths[index];
+		document.addEventListener('mousemove', onMouseMove);
+		document.addEventListener('mouseup', onMouseUp);
+		e.preventDefault();
+	};
+
+	const onMouseMove = (e: MouseEvent) => {
+		if (resizingCol.current === null) return;
+		const deltaX = e.clientX - startX.current;
+		setWidths((prevWidths) => {
+			const newWidths = [...prevWidths];
+			newWidths[resizingCol.current!] = Math.max(50, startWidth.current + deltaX);
+			return newWidths;
+		});
+	};
+
+	const onMouseUp = () => {
+		resizingCol.current = null;
+		document.removeEventListener('mousemove', onMouseMove);
+		document.removeEventListener('mouseup', onMouseUp);
+	};
 
 	const highlight = (text: any): JSX.Element => {
 		const s = (searchTerm ?? '').trim();
@@ -36,8 +64,17 @@ export const DataTable: React.FC<TableProps> = ({ columns, rows, searchTerm }) =
 				<thead>
 					<tr className="bg-black shadow-md shadow-black/60">
 						{columns.map((c, i) => (
-							<th key={i} className="px-4 py-2 border border-gray-600 text-shadow-md">
-								<span className="select-none">{c}</span>
+							<th
+								key={i}
+								className="relative px-4 py-2 border border-gray-600 text-shadow-md select-none"
+								style={{ width: widths[i] }}
+							>
+								<span>{c}</span>
+								<div
+									onMouseDown={(e) => onMouseDown(e, i)}
+									className="absolute top-0 right-0 h-full w-1 cursor-col-resize select-none"
+									style={{ userSelect: 'none' }}
+								/>
 							</th>
 						))}
 					</tr>
@@ -46,7 +83,12 @@ export const DataTable: React.FC<TableProps> = ({ columns, rows, searchTerm }) =
 					{rows.map((r, ri) => (
 						<tr key={ri} className="bg-black hover:bg-gray-900 shadow-md shadow-black/40 rounded-md">
 							{columns.map((_, ci) => (
-								<td key={ci} className="px-4 py-2 truncate max-w-xs border border-gray-600 shadow-sm shadow-black/30" title={r?.[ci] != null ? String(r[ci]) : ''}>
+								<td
+									key={ci}
+									className="px-4 py-2 border border-gray-600 shadow-sm shadow-black/30"
+									style={{ width: widths[ci], maxWidth: widths[ci], whiteSpace: 'normal' }}
+									title={r?.[ci] != null ? String(r[ci]) : ''}
+								>
 									{highlight(r?.[ci])}
 								</td>
 							))}

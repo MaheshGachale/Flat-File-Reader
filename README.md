@@ -23,7 +23,7 @@
 ## 📦 Installation
 
 1. Open **VS Code**
-2. Press `Ctrl+Shift+X` (Windows/Linux) or `Cmd+Shift+X` (Mac) to open Extensions
+2. Press `Ctrl+Shift+X` (Windows) to open Extensions
 3. Search for **"Flat File Reader"**
 4. Click **Install**
 
