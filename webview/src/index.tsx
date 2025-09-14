@@ -23,9 +23,10 @@ const App: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [sql, setSql] = useState<string>('select * from data');
 	const [error, setError] = useState<string | null>(null);
+	const [showErrorPopup, setShowErrorPopup] = useState<boolean>(false);
 	const [columns, setColumns] = useState<string[]>([]);
 	const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
-	const pageSize = 1000;
+	const pageSize = 100;
 
 	const requestPage = (offset: number, s?: string, q?: string) => {
 		setLoading(true);
@@ -45,7 +46,13 @@ const App: React.FC = () => {
 			} else if (msg?.type === 'error') {
 				setLoading(false);
 				setError(msg.message ?? 'Unknown error');
+				setShowErrorPopup(true);
 				setData(null);
+				// Hide error popup after 3 seconds
+				setTimeout(() => {
+					setShowErrorPopup(false);
+					setError(null);
+				}, 3000);
 			}
 		};
 		window.addEventListener('message', handler);
@@ -164,12 +171,18 @@ const App: React.FC = () => {
 							<DataTable columns={data.columns} rows={data.rows} searchTerm={search} />
 						</motion.div>
 					)}
-					{!loading && error && (
-						<div className="h-full grid place-items-center">
-							<div className="px-4 py-3 rounded-md border border-red-700 bg-red-900/30 text-red-200">
-								<span className="mr-2"></span> Hey! Dude please enter correct SQL..
+					{!loading && showErrorPopup && error && (
+						<motion.div
+							key="error-popup"
+							initial={{ opacity: 0, scale: 0.8 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={{ opacity: 0, scale: 0.8 }}
+							className="fixed top-4 right-4 z-50"
+						>
+							<div className="px-4 py-3 rounded-md border border-red-700 bg-red-900/90 text-red-200 shadow-lg">
+								<span className="mr-2">⚠️</span> {error}
 							</div>
-						</div>
+						</motion.div>
 					)}
 					{!loading && !data && !error && (
 						<div className="h-full grid place-items-center text-gray-500">No data</div>

@@ -2,7 +2,7 @@
   "name": "flat-file-reader",
   "displayName": "Flat File Reader",
   "description": "Open and explore CSV, Parquet, and Excel files with a modern table UI inside VS Code.",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "publisher": "MaheshG",
   "repository": {
     "type": "git",
@@ -18,7 +18,9 @@
   "activationEvents": [
     "onCommand:flatFileReader.open",
     "onLanguage:csv",
-    "onCustomEditor:flatFileReader.viewer"
+    "onCustomEditor:flatFileReader.viewer",
+    "onStartupFinished",
+    "onFileSystem:file"
   ],
   "main": "out/extension.js",
   "binary": {

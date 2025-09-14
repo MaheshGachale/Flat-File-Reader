@@ -142,20 +142,43 @@ async function loadWithDuckDB(filePath, offset, limit, search, sql) {
                                 console.error('DuckDB data query error:', err);
                                 return reject(err);
                             }
-                            console.log('DuckDB raw columns:', rawColumns);
-                            console.log('DuckDB sanitized columns:', columns);
                             console.log('DuckDB rows:', rows);
-                            const dataRows = rows.map((row) => rawColumns.map((col) => {
-                                const value = row[col];
-                                return typeof value === 'bigint' ? value.toString() : value;
-                            }));
-                            resolve({
-                                columns,
-                                rows: dataRows,
-                                offset,
-                                limit,
-                                total
-                            });
+                            // Get columns from query result instead of original table
+                            let queryColumns;
+                            if (rows.length > 0) {
+                                queryColumns = Object.keys(rows[0]).map(sanitizeColumnName);
+                            }
+                            else {
+                                // If no rows, try to get columns from a LIMIT 0 query
+                                con.all(`${query} LIMIT 0`, (err, emptyRows) => {
+                                    if (err) {
+                                        console.error('DuckDB column query error:', err);
+                                        return reject(err);
+                                    }
+                                    if (emptyRows.length > 0) {
+                                        queryColumns = Object.keys(emptyRows[0]).map(sanitizeColumnName);
+                                    }
+                                    else {
+                                        queryColumns = [];
+                                    }
+                                    returnData(queryColumns, rows);
+                                });
+                                return;
+                            }
+                            function returnData(cols, dataRows) {
+                                const processedRows = dataRows.map((row) => cols.map((col) => {
+                                    const value = row[col];
+                                    return typeof value === 'bigint' ? value.toString() : value;
+                                }));
+                                resolve({
+                                    columns: cols,
+                                    rows: processedRows,
+                                    offset,
+                                    limit,
+                                    total
+                                });
+                            }
+                            returnData(queryColumns, rows);
                         });
                     });
                 });
@@ -236,17 +259,42 @@ async function loadWithExcelJS(filePath, offset, limit, search, sql) {
                                 return reject(new Error('Hey! Dude please enter correct SQL..'));
                             }
                             console.log('DuckDB rows:', rows);
-                            const dataRows = rows.map((row) => columns.map((col) => {
-                                const value = row[col];
-                                return typeof value === 'bigint' ? value.toString() : value;
-                            }));
-                            resolve({
-                                columns,
-                                rows: dataRows,
-                                offset,
-                                limit,
-                                total
-                            });
+                            // Get columns from query result instead of original table
+                            let queryColumns;
+                            if (rows.length > 0) {
+                                queryColumns = Object.keys(rows[0]).map(sanitizeColumnName);
+                            }
+                            else {
+                                // If no rows, try to get columns from a LIMIT 0 query
+                                con.all(`${query} LIMIT 0`, (err, emptyRows) => {
+                                    if (err) {
+                                        console.error('DuckDB column query error:', err);
+                                        return reject(err);
+                                    }
+                                    if (emptyRows.length > 0) {
+                                        queryColumns = Object.keys(emptyRows[0]).map(sanitizeColumnName);
+                                    }
+                                    else {
+                                        queryColumns = [];
+                                    }
+                                    returnData(queryColumns, rows);
+                                });
+                                return;
+                            }
+                            function returnData(cols, dataRows) {
+                                const processedRows = dataRows.map((row) => cols.map((col) => {
+                                    const value = row[col];
+                                    return typeof value === 'bigint' ? value.toString() : value;
+                                }));
+                                resolve({
+                                    columns: cols,
+                                    rows: processedRows,
+                                    offset,
+                                    limit,
+                                    total
+                                });
+                            }
+                            returnData(queryColumns, rows);
                         });
                     });
                 }

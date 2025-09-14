@@ -121,20 +121,44 @@ async function loadWithDuckDB(filePath: string, offset: number, limit: number, s
 								console.error('DuckDB data query error:', err);
 								return reject(err);
 							}
-							console.log('DuckDB raw columns:', rawColumns);
-							console.log('DuckDB sanitized columns:', columns);
 							console.log('DuckDB rows:', rows);
-							const dataRows = rows.map((row: any) => rawColumns.map((col: string) => {
-								const value = row[col];
-								return typeof value === 'bigint' ? value.toString() : value;
-							}));
-							resolve({
-								columns,
-								rows: dataRows,
-								offset,
-								limit,
-								total
-							});
+
+							// Get columns from query result instead of original table
+							let queryColumns: string[];
+							if (rows.length > 0) {
+								queryColumns = Object.keys(rows[0]).map(sanitizeColumnName);
+							} else {
+								// If no rows, try to get columns from a LIMIT 0 query
+								con.all(`${query} LIMIT 0`, (err: Error | null, emptyRows: any[]) => {
+									if (err) {
+										console.error('DuckDB column query error:', err);
+										return reject(err);
+									}
+									if (emptyRows.length > 0) {
+										queryColumns = Object.keys(emptyRows[0]).map(sanitizeColumnName);
+									} else {
+										queryColumns = [];
+									}
+									returnData(queryColumns, rows);
+								});
+								return;
+							}
+
+							function returnData(cols: string[], dataRows: any[]) {
+								const processedRows = dataRows.map((row: any) => cols.map((col: string) => {
+									const value = row[col];
+									return typeof value === 'bigint' ? value.toString() : value;
+								}));
+								resolve({
+									columns: cols,
+									rows: processedRows,
+									offset,
+									limit,
+									total
+								});
+							}
+
+							returnData(queryColumns, rows);
 						});
 					});
 				});
@@ -221,17 +245,43 @@ async function loadWithExcelJS(filePath: string, offset: number, limit: number, 
 								return reject(new Error('Hey! Dude please enter correct SQL..'));
 							}
 							console.log('DuckDB rows:', rows);
-							const dataRows = rows.map((row: any) => columns.map((col: string) => {
-								const value = row[col];
-								return typeof value === 'bigint' ? value.toString() : value;
-							}));
-							resolve({
-								columns,
-								rows: dataRows,
-								offset,
-								limit,
-								total
-							});
+
+							// Get columns from query result instead of original table
+							let queryColumns: string[];
+							if (rows.length > 0) {
+								queryColumns = Object.keys(rows[0]).map(sanitizeColumnName);
+							} else {
+								// If no rows, try to get columns from a LIMIT 0 query
+								con.all(`${query} LIMIT 0`, (err: Error | null, emptyRows: any[]) => {
+									if (err) {
+										console.error('DuckDB column query error:', err);
+										return reject(err);
+									}
+									if (emptyRows.length > 0) {
+										queryColumns = Object.keys(emptyRows[0]).map(sanitizeColumnName);
+									} else {
+										queryColumns = [];
+									}
+									returnData(queryColumns, rows);
+								});
+								return;
+							}
+
+							function returnData(cols: string[], dataRows: any[]) {
+								const processedRows = dataRows.map((row: any) => cols.map((col: string) => {
+									const value = row[col];
+									return typeof value === 'bigint' ? value.toString() : value;
+								}));
+								resolve({
+									columns: cols,
+									rows: processedRows,
+									offset,
+									limit,
+									total
+								});
+							}
+
+							returnData(queryColumns, rows);
 						});
 					});
 				}

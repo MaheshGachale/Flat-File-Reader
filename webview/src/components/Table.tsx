@@ -4,10 +4,12 @@ type TableProps = {
 	columns: string[];
 	rows: any[][];
 	searchTerm?: string;
+	pageSize?: number;
 };
 
-export const DataTable: React.FC<TableProps> = ({ columns, rows, searchTerm }) => {
+export const DataTable: React.FC<TableProps> = ({ columns, rows, searchTerm, pageSize = 100 }) => {
 	const [widths, setWidths] = useState<number[]>(() => columns.map(() => 200));
+	const [currentPage, setCurrentPage] = useState<number>(1);
 	const resizingCol = useRef<number | null>(null);
 	const startX = useRef<number>(0);
 	const startWidth = useRef<number>(0);
@@ -16,6 +18,10 @@ export const DataTable: React.FC<TableProps> = ({ columns, rows, searchTerm }) =
 		setWidths(columns.map((_, i) => widths[i] ?? 200));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [columns.join('|')]);
+
+	useEffect(() => {
+		setCurrentPage(1); // Reset to first page when data changes
+	}, [rows.length]);
 
 	const onMouseDown = (e: React.MouseEvent, index: number) => {
 		resizingCol.current = index;
@@ -26,18 +32,31 @@ export const DataTable: React.FC<TableProps> = ({ columns, rows, searchTerm }) =
 		e.preventDefault();
 	};
 
+	let animationFrameId: number | null = null;
+
 	const onMouseMove = (e: MouseEvent) => {
 		if (resizingCol.current === null) return;
 		const deltaX = e.clientX - startX.current;
-		setWidths((prevWidths) => {
-			const newWidths = [...prevWidths];
-			newWidths[resizingCol.current!] = Math.max(50, startWidth.current + deltaX);
-			return newWidths;
+
+		if (animationFrameId !== null) {
+			cancelAnimationFrame(animationFrameId);
+		}
+
+		animationFrameId = requestAnimationFrame(() => {
+			setWidths((prevWidths) => {
+				const newWidths = [...prevWidths];
+				newWidths[resizingCol.current!] = Math.max(50, startWidth.current + deltaX);
+				return newWidths;
+			});
 		});
 	};
 
 	const onMouseUp = () => {
 		resizingCol.current = null;
+		if (animationFrameId !== null) {
+			cancelAnimationFrame(animationFrameId);
+			animationFrameId = null;
+		}
 		document.removeEventListener('mousemove', onMouseMove);
 		document.removeEventListener('mouseup', onMouseUp);
 	};
@@ -56,6 +75,24 @@ export const DataTable: React.FC<TableProps> = ({ columns, rows, searchTerm }) =
 		} catch {
 			return <>{str}</>;
 		}
+	};
+
+	// Pagination calculations
+	const totalPages = Math.ceil(rows.length / pageSize);
+	const startIndex = (currentPage - 1) * pageSize;
+	const endIndex = startIndex + pageSize;
+	const currentRows = rows.slice(startIndex, endIndex);
+
+	const goToPage = (page: number) => {
+		setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+	};
+
+	const goToPrevious = () => {
+		setCurrentPage(prev => Math.max(1, prev - 1));
+	};
+
+	const goToNext = () => {
+		setCurrentPage(prev => Math.min(totalPages, prev + 1));
 	};
 
 	return (
@@ -80,7 +117,7 @@ export const DataTable: React.FC<TableProps> = ({ columns, rows, searchTerm }) =
 					</tr>
 				</thead>
 				<tbody>
-					{rows.map((r, ri) => (
+					{currentRows.map((r, ri) => (
 						<tr key={ri} className="bg-black hover:bg-gray-900 shadow-md shadow-black/40 rounded-md">
 							{columns.map((_, ci) => (
 								<td
@@ -96,6 +133,61 @@ export const DataTable: React.FC<TableProps> = ({ columns, rows, searchTerm }) =
 					))}
 				</tbody>
 			</table>
+
+			{/* Pagination Controls */}
+			{totalPages > 1 && (
+				<div className="flex items-center justify-between mt-4 px-2">
+					<div className="text-sm text-gray-400">
+						Showing {startIndex + 1}-{Math.min(endIndex, rows.length)} of {rows.length} records
+					</div>
+					<div className="flex items-center gap-2">
+						<button
+							onClick={goToPrevious}
+							disabled={currentPage === 1}
+							className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:cursor-not-allowed text-gray-300 rounded-md transition-colors"
+						>
+							Previous
+						</button>
+
+						<div className="flex items-center gap-1">
+							{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+								let pageNum;
+								if (totalPages <= 5) {
+									pageNum = i + 1;
+								} else if (currentPage <= 3) {
+									pageNum = i + 1;
+								} else if (currentPage >= totalPages - 2) {
+									pageNum = totalPages - 4 + i;
+								} else {
+									pageNum = currentPage - 2 + i;
+								}
+
+								return (
+									<button
+										key={pageNum}
+										onClick={() => goToPage(pageNum)}
+										className={`px-3 py-1 text-sm rounded-md transition-colors ${
+											currentPage === pageNum
+												? 'bg-blue-600 text-white'
+												: 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+										}`}
+									>
+										{pageNum}
+									</button>
+								);
+							})}
+						</div>
+
+						<button
+							onClick={goToNext}
+							disabled={currentPage === totalPages}
+							className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:cursor-not-allowed text-gray-300 rounded-md transition-colors"
+						>
+							Next
+						</button>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
