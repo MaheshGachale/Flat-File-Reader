@@ -1,14 +1,19 @@
 # 📊 Flat File Reader - VS Code Extension
 
-> Seamlessly explore and analyze **CSV, TSV, Parquet, and Excel files** with a powerful, intuitive table viewer – directly in VS Code. No external dependencies required!
+> Seamlessly explore and analyze **CSV, TSV, Parquet, and Excel files** with a powerful, intuitive table viewer – directly in VS Code. Now with **AI-powered SQL generation**! No external dependencies required!
 
-![Extension Screenshot](media/Extension_IMG.png)
+![Extension Screenshot](media/Exension_img.png)
+
+### 🤖 AI-Powered SQL Generation
+
+![Extension Screenshot](media/Generate_with_AI.png)
 
 ---
 
 ## ✨ Features
 
 - 🚀 **Lightning Fast** – Powered by DuckDB for blazing-fast data processing
+- 🤖 **AI-Powered SQL Generation** – Generate complex queries using OpenAI GPT or Google Gemini
 - 📁 **Multi-Format Support** – CSV, TSV, Parquet, Excel files
 - 🔍 **Advanced Querying** – Run custom SQL queries on your data
 - 🎯 **Smart Search** – Full-text search across all columns
@@ -56,6 +61,30 @@ SELECT * FROM data WHERE age > 25
 SELECT category, COUNT(*) as count FROM data GROUP BY category
 ```
 
+### 🤖 AI-Powered SQL Generation
+
+**Generate SQL queries using AI!** Click the **"Generate SQL with AI"** button to open the AI assistant.
+
+#### Setup Your API Key
+1. **Choose Provider**: Select OpenAI or Gemini (free option available)
+2. **Get API Key**:
+   - **Gemini (Free)**: Click "Get free API token" for step-by-step instructions
+   - **OpenAI**: Visit [OpenAI API Keys](https://platform.openai.com/api-keys)
+3. **Enter Key**: Paste your API key in the secure input field
+4. **Select Model**: Choose your preferred AI model
+
+#### Generate Queries
+- **Describe what you want**: "Show me sales by region" or "Find customers over 30"
+- **AI generates SQL**: Get complex queries instantly
+- **Insert & Execute**: Click "Insert" to add the query to your editor
+- **Iterate**: Ask follow-up questions to refine your analysis
+
+**Example AI Prompts:**
+- "Calculate total revenue by product category"
+- "Find the top 10 customers by purchase amount"
+- "Show monthly trends for the last year"
+- "Identify outliers in the price column"
+
 ---
 
 ## 📋 Supported File Formats
@@ -66,67 +95,6 @@ SELECT category, COUNT(*) as count FROM data GROUP BY category
 | TSV | `.tsv` | Tab-separated values |
 | Parquet | `.parquet`, `.pq` | Columnar storage format |
 | Excel | `.xlsx`, `.xls` | Spreadsheet files |
-
----
-
-## 🛠️ Development
-
-### Prerequisites
-- [Node.js](https://nodejs.org/) 18+ (LTS recommended)
-- [VS Code](https://code.visualstudio.com/) with Extension Development Host
-
-### Setup
-```bash
-# Clone the repository
-git clone https://github.com/MaheshGachale/Flat-File-Reader.git
-cd flat-file-reader
-
-# Install dependencies
-npm install
-
-# Build the extension
-npm run build
-
-# Test in Extension Development Host
-npm run dev
-```
-
-### Project Structure
-```
-├── src/
-│   ├── extension.ts      # Main extension entry point
-│   ├── fileLoader.ts     # Data loading logic (DuckDB + ExcelJS)
-│   └── types.d.ts        # TypeScript type definitions
-├── webview/
-│   └── src/
-│       ├── index.tsx     # React UI components
-│       └── components/   # Table and other components
-├── package.json
-└── README.md
-```
-
-### Technologies Used
-- **Backend**: Node.js, DuckDB, ExcelJS, PapaParse
-- **Frontend**: React, TypeScript, Tailwind CSS, Framer Motion
-- **Build**: Webpack, TypeScript Compiler
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-### Development Guidelines
-- Follow TypeScript best practices
-- Add tests for new features
-- Update documentation
-- Ensure cross-platform compatibility
 
 ---
 
