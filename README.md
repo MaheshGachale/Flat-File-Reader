@@ -2,11 +2,21 @@
 
 > Seamlessly explore and analyze **CSV, TSV, Parquet, and Excel files** with a powerful, intuitive table viewer – directly in VS Code. Now with **AI-powered SQL generation**! No external dependencies required!
 
+### Demo Video
+
+[Watch Demo Video](https://drive.google.com/file/d/1c7dZTTZJ-AFzb29cIHg1XIghg1gt_RUX/view?usp=drive_link)
+
+### 🤖 UI
+
 ![Extension Screenshot](media/Exension_img.png)
 
 ### 🤖 AI-Powered SQL Generation
 
 ![Extension Screenshot](media/Generate_with_AI.png)
+
+### 🤖 Visulize your data
+
+![Extension Screenshot](media/Chart.png)
 
 ---
 
