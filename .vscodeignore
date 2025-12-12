@@ -1,0 +1,56 @@
+# Exclude all node_modules except necessary dependencies
+node_modules/**
+
+# Include native dependencies for DuckDB
+!node_modules/duckdb/**
+!node_modules/@mapbox/**
+!node_modules/nopt/**
+!node_modules/abbrev/**
+!node_modules/detect-libc/**
+!node_modules/https-proxy-agent/**
+!node_modules/make-dir/**
+!node_modules/node-fetch/**
+!node_modules/npmlog/**
+!node_modules/rimraf/**
+!node_modules/semver/**
+!node_modules/tar/**
+!node_modules/whatwg-url/**
+!node_modules/tr46/**
+!node_modules/punycode/**
+!node_modules/webidl-conversions/**
+!node_modules/agent-base/**
+
+# Include runtime dependencies used by the extension
+!node_modules/exceljs/**
+!node_modules/fast-xml-parser/**
+!node_modules/papaparse/**
+!node_modules/framer-motion/**
+!node_modules/html2canvas/**
+!node_modules/react/**
+!node_modules/react-dom/**
+!node_modules/recharts/**
+
+# Ignore source and dev-only stuff
+.vscode/**
+.vscode-test/**
+src/**
+webview/src/**
+scripts/**
+test/**
+**/*.map
+**/*.test.*
+**/.DS_Store
+.eslintrc.*
+.eslintignore
+.gitignore
+.git/**
+tailwind.config.cjs
+tsconfig.json
+
+# Development files
+nvm-setup.exe
+TODO.md
+
+# Keep only build outputs
+!out/**
+!webview/dist/**
